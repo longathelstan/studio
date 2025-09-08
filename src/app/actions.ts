@@ -18,37 +18,28 @@ export interface ShortenState {
   };
 }
 
-async function createShortSlug(longUrl: string): Promise<string> {
-  const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
-  const namespaceId = process.env.CLOUDFLARE_KV_NAMESPACE_ID;
-  const apiToken = process.env.CLOUDFLARE_API_TOKEN;
+async function createShortLinkWithCustomAPI(longUrl: string): Promise<string> {
+  const apiUrl = 'https://l.longathelstan.xyz/'; // Your API endpoint
 
-  if (!accountId || !namespaceId || !apiToken) {
-    throw new Error('Cloudflare KV credentials are not configured.');
-  }
-
-  const slug = Math.random().toString(36).substring(2, 8);
-  const key = slug;
-  const value = longUrl;
-  
-  const url = `https://api.cloudflare.com/client/v4/accounts/${accountId}/storage/kv/namespaces/${namespaceId}/values/${key}`;
-
-  const response = await fetch(url, {
-    method: 'PUT',
+  const response = await fetch(apiUrl, {
+    method: 'POST',
     headers: {
-      'Authorization': `Bearer ${apiToken}`,
-      'Content-Type': 'text/plain',
+      'Content-Type': 'application/json',
     },
-    body: value,
+    body: JSON.stringify({ longUrl }),
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    console.error('Cloudflare API Error:', errorText);
-    throw new Error('Failed to create short link in Cloudflare KV.');
+    const errorData = await response.json().catch(() => ({ error: 'Lỗi không xác định từ API' }));
+    throw new Error(errorData.error || `Lỗi API: ${response.statusText}`);
   }
 
-  return slug;
+  const data = await response.json();
+  if (!data.shortUrl) {
+    throw new Error('Phản hồi từ API không chứa shortUrl.');
+  }
+
+  return data.shortUrl;
 }
 
 
@@ -73,8 +64,7 @@ export async function createShortLink(
   const { url, generateQr } = validatedFields.data;
 
   try {
-    const slug = await createShortSlug(url);
-    const shortUrl = `https://lnk.wv/${slug}`;
+    const shortUrl = await createShortLinkWithCustomAPI(url);
 
     if (generateQr) {
       const qrResult = await intelligentQrCodeGeneration({ shortUrl });
