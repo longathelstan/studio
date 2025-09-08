@@ -13,16 +13,13 @@ export default function Home() {
     <div className="flex min-h-screen w-full bg-background">
       <main className="container mx-auto flex flex-1 flex-col items-center justify-center p-4">
         <div className="w-full max-w-md space-y-8">
-          <header className="text-center space-y-2">
+          <header className="w-full text-left">
             <div className="inline-flex items-center gap-3">
               <Logo className="h-10 w-10 text-primary" />
               <h1 className="text-4xl font-bold tracking-tight text-foreground">
-                LinkWave
+                CHTCoder - Link
               </h1>
             </div>
-            <p className="text-muted-foreground">
-              Một ứng dụng rút gọn link hiện đại, nhanh chóng và thông minh.
-            </p>
           </header>
 
           <div className="space-y-4">
@@ -30,8 +27,8 @@ export default function Home() {
             {result?.shortUrl && <ShortLinkCard {...result} />}
           </div>
 
-          <footer className="text-center text-sm text-muted-foreground">
-            <p>Tác giả: lowng - CHTCoder</p>
+          <footer className="w-full text-right text-sm text-muted-foreground">
+            <p>fromlowngwithluv</p>
           </footer>
         </div>
       </main>

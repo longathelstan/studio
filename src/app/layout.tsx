@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'LinkWave',
-  description: 'Một ứng dụng rút gọn link hiện đại by lowng - CHTCoder.',
+  title: 'CHTCoder - Link',
+  description: 'Rút gọn link nhanh chóng và hiệu quả by fromlowngwithluv.',
 };
 
 export default function RootLayout({
