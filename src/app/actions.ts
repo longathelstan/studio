@@ -1,7 +1,7 @@
 'use server';
 
 import { z } from 'zod';
-import { intelligentQrCodeGeneration } from '@/ai/flows/intelligent-qr-code-generation';
+import QRCode from 'qrcode';
 
 const CreateShortLinkSchema = z.object({
   url: z.string().url({ message: 'Vui lòng nhập một URL hợp lệ.' }),
@@ -11,7 +11,6 @@ const CreateShortLinkSchema = z.object({
 export interface ShortenState {
   shortUrl?: string;
   qrCodeDataUri?: string | null;
-  reason?: string | null;
   error?: string | null;
   fieldErrors?: {
     url?: string[];
@@ -65,18 +64,19 @@ export async function createShortLink(
 
   try {
     const shortUrl = await createShortLinkWithCustomAPI(url);
+    let qrCodeDataUri: string | undefined = undefined;
 
     if (generateQr) {
-      const qrResult = await intelligentQrCodeGeneration({ shortUrl });
-      return {
-        shortUrl,
-        qrCodeDataUri: qrResult.qrCodeDataUri,
-        reason: qrResult.reason,
-      };
+      qrCodeDataUri = await QRCode.toDataURL(shortUrl, {
+        errorCorrectionLevel: 'H',
+        margin: 2,
+        width: 200,
+      });
     }
 
     return {
       shortUrl,
+      qrCodeDataUri,
     };
   } catch (e) {
     console.error(e);

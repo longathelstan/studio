@@ -12,10 +12,10 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { ClipboardCopy, Download, Info } from 'lucide-react';
+import { ClipboardCopy, Download } from 'lucide-react';
 import type { ShortenState } from '@/app/actions';
 
-export function ShortLinkCard({ shortUrl, qrCodeDataUri, reason }: ShortenState) {
+export function ShortLinkCard({ shortUrl, qrCodeDataUri }: ShortenState) {
   const { toast } = useToast();
 
   const handleCopy = () => {
@@ -69,14 +69,6 @@ export function ShortLinkCard({ shortUrl, qrCodeDataUri, reason }: ShortenState)
           </div>
         )}
       </CardContent>
-      {reason && (
-        <CardFooter>
-            <div className="text-xs text-muted-foreground flex items-start gap-2 rounded-lg bg-muted p-3 w-full">
-                <Info className="h-4 w-4 flex-shrink-0 mt-0.5" />
-                <p><span className="font-semibold text-foreground">AI Ghi chú:</span> {reason}</p>
-            </div>
-        </CardFooter>
-      )}
     </Card>
   );
 }
