@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { UrlShortenerForm } from '@/components/url-shortener-form';
 import { ShortLinkCard } from '@/components/shortlink-card';
-import { Logo } from '@/components/icons';
 import type { ShortenState } from '@/app/actions';
 
 export default function Home() {
@@ -15,7 +15,7 @@ export default function Home() {
         <div className="w-full max-w-md space-y-8">
           <header className="w-full text-left">
             <div className="inline-flex items-center gap-3">
-              <Logo className="h-10 w-10 text-primary" />
+              <Image src="/logo.svg" alt="CHTCoder Logo" width={40} height={40} className="text-primary"/>
               <h1 className="text-4xl font-bold tracking-tight text-foreground">
                 CHTCoder - Link
               </h1>
