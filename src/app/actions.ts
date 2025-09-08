@@ -18,6 +18,40 @@ export interface ShortenState {
   };
 }
 
+async function createShortSlug(longUrl: string): Promise<string> {
+  const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
+  const namespaceId = process.env.CLOUDFLARE_KV_NAMESPACE_ID;
+  const apiToken = process.env.CLOUDFLARE_API_TOKEN;
+
+  if (!accountId || !namespaceId || !apiToken) {
+    throw new Error('Cloudflare KV credentials are not configured.');
+  }
+
+  const slug = Math.random().toString(36).substring(2, 8);
+  const key = slug;
+  const value = longUrl;
+  
+  const url = `https://api.cloudflare.com/client/v4/accounts/${accountId}/storage/kv/namespaces/${namespaceId}/values/${key}`;
+
+  const response = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${apiToken}`,
+      'Content-Type': 'text/plain',
+    },
+    body: value,
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error('Cloudflare API Error:', errorText);
+    throw new Error('Failed to create short link in Cloudflare KV.');
+  }
+
+  return slug;
+}
+
+
 export async function createShortLink(
   prevState: ShortenState,
   formData: FormData
@@ -36,11 +70,11 @@ export async function createShortLink(
     };
   }
 
-  const { generateQr } = validatedFields.data;
+  const { url, generateQr } = validatedFields.data;
 
   try {
-    // Simulate URL shortening
-    const shortUrl = `https://lnk.wv/${Math.random().toString(36).substring(2, 8)}`;
+    const slug = await createShortSlug(url);
+    const shortUrl = `https://lnk.wv/${slug}`;
 
     if (generateQr) {
       const qrResult = await intelligentQrCodeGeneration({ shortUrl });
@@ -56,8 +90,10 @@ export async function createShortLink(
     };
   } catch (e) {
     console.error(e);
+    // Check if e is an instance of Error before accessing e.message
+    const errorMessage = e instanceof Error ? e.message : 'Đã xảy ra lỗi không xác định.';
     return {
-      error: 'Đã xảy ra lỗi khi tạo link rút gọn. Vui lòng thử lại.',
+      error: `Đã xảy ra lỗi khi tạo link rút gọn: ${errorMessage}. Vui lòng thử lại.`,
     };
   }
 }
