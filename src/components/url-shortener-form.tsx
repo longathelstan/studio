@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Wand2, Link as LinkIcon } from 'lucide-react';
+import { Wand2, Link as LinkIcon, AtSign } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface UrlShortenerFormProps {
@@ -82,6 +82,25 @@ export function UrlShortenerForm({ onResult }: UrlShortenerFormProps) {
           <p id="url-error" className="text-sm text-destructive mt-1">{state.fieldErrors.url[0]}</p>
         )}
       </div>
+
+       <div className="space-y-2">
+        <Label htmlFor="customAlias">Tên tùy chỉnh (Tùy chọn)</Label>
+        <div className="relative">
+          <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <Input
+            id="customAlias"
+            name="customAlias"
+            type="text"
+            placeholder="vi-du-link-rut-gon"
+            className="pl-10"
+            aria-describedby='alias-error'
+          />
+        </div>
+         {state.fieldErrors?.customAlias && (
+          <p id="alias-error" className="text-sm text-destructive mt-1">{state.fieldErrors.customAlias[0]}</p>
+        )}
+      </div>
+
       <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm bg-card">
         <div className="space-y-0.5">
           <Label htmlFor="generateQr">Tạo mã QR</Label>

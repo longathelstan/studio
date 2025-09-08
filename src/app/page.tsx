@@ -15,7 +15,7 @@ export default function Home() {
         <div className="w-full max-w-md space-y-8">
           <header className="w-full text-left">
             <div className="inline-flex items-center gap-3">
-              <Image src="/logo.svg" alt="CHTCoder Logo" width={40} height={40} className="text-primary"/>
+              <Image src="/logo.svg" alt="CHTCoder Logo" width={120} height={120} className="text-primary"/>
               <h1 className="text-4xl font-bold tracking-tight text-foreground">
                 CHTCoder - Link
               </h1>

@@ -5,6 +5,7 @@ import QRCode from 'qrcode';
 
 const CreateShortLinkSchema = z.object({
   url: z.string().url({ message: 'Vui lòng nhập một URL hợp lệ.' }),
+  customAlias: z.string().optional(),
   generateQr: z.boolean(),
 });
 
@@ -14,18 +15,24 @@ export interface ShortenState {
   error?: string | null;
   fieldErrors?: {
     url?: string[];
+    customAlias?: string[];
   };
 }
 
-async function createShortLinkWithCustomAPI(longUrl: string): Promise<string> {
+async function createShortLinkWithCustomAPI(longUrl: string, customAlias?: string): Promise<string> {
   const apiUrl = 'https://l.longathelstan.xyz/'; // Your API endpoint
+
+  const body: { longUrl: string; customAlias?: string } = { longUrl };
+  if (customAlias) {
+    body.customAlias = customAlias;
+  }
 
   const response = await fetch(apiUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ longUrl }),
+    body: JSON.stringify(body),
   });
 
   if (!response.ok) {
@@ -48,6 +55,7 @@ export async function createShortLink(
 ): Promise<ShortenState> {
   const rawFormData = {
     url: formData.get('url'),
+    customAlias: formData.get('customAlias') || undefined,
     generateQr: formData.get('generateQr') === 'on',
   };
 
@@ -60,10 +68,10 @@ export async function createShortLink(
     };
   }
 
-  const { url, generateQr } = validatedFields.data;
+  const { url, customAlias, generateQr } = validatedFields.data;
 
   try {
-    const shortUrl = await createShortLinkWithCustomAPI(url);
+    const shortUrl = await createShortLinkWithCustomAPI(url, customAlias);
     let qrCodeDataUri: string | undefined = undefined;
 
     if (generateQr) {
